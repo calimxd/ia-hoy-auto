@@ -1,0 +1,28 @@
+name: ia-hoy-auto
+on:
+  schedule:
+    - cron: '0 15,3 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - run: python worker_auto.py
+        env:
+          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
+          FB_PAGE_ID: '140179309177283'
+          X_AUTH_TOKEN: ${{ secrets.X_AUTH_TOKEN }}
+          X_CT0: ${{ secrets.X_CT0 }}
+      - run: |
+          git config user.name "ia-hoy-bot"
+          git config user.email "bot@iahoy.local"
+          git add done.json final/ || true
+          git diff --cached --quiet || git commit -m "auto: $(date -u +%F-%H%M)"
+          git push || echo "nothing to push"
