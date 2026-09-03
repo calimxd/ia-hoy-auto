@@ -1,0 +1,6 @@
+.fb_token
+x_cookies.json
+cookies.json
+originals/
+__pycache__/
+*.pyc
